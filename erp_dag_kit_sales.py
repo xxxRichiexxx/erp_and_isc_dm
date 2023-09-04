@@ -1,23 +1,10 @@
-
-import sqlalchemy as sa
-from urllib.parse import quote
 import datetime as dt
-from dateutil.relativedelta import relativedelta
 
 from airflow import DAG
-from airflow.operators.python_operator import PythonOperator
 from airflow.utils.task_group import TaskGroup
-from airflow.hooks.base import BaseHook
 from airflow.operators.dummy import DummyOperator
 from airflow.contrib.operators.vertica_operator import VerticaOperator
 from airflow.sensors.external_task import ExternalTaskSensor
-
-
-dwh_con = BaseHook.get_connection('vertica')
-ps = quote(dwh_con.password)
-dwh_engine = sa.create_engine(
-    f'vertica+vertica_python://{dwh_con.login}:{ps}@{dwh_con.host}:{dwh_con.port}/sttgaz'
-)
 
 
 default_args = {
@@ -38,7 +25,7 @@ with DAG(
 
     start = DummyOperator(task_id='Начало')
 
-    with TaskGroup('Ожидание формирования слоя DDS') as dds_wait:
+    with TaskGroup('Ожидание_формирования_слоя_DDS') as dds_wait:
 
         isc_wait = ExternalTaskSensor(
             task_id='isc_wait',
