@@ -41,7 +41,6 @@ with DAG(
 
         [isc_wait, erp_wait]
 
-
     with TaskGroup('Загрузка_данных_в_dm_слой') as data_to_dm:
 
         dm_TEST_erp_sales = VerticaOperator(
@@ -66,7 +65,16 @@ with DAG(
 
     with TaskGroup('Проверки') as data_checks:
 
-        pass
+        dm_TEST_erp_sales_check = VerticaOperator(
+                    task_id='dm_TEST_erp_sales_check',
+                    vertica_conn_id='vertica',
+                    sql='scripts/dm_TEST_erp_sales_check.sql',
+                    params={
+                        'dm': 'dm_TEST_erp_sales',
+                    }
+                )
+    
+        dm_TEST_erp_sales_check
 
     end = DummyOperator(task_id='Конец')
 
