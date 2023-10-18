@@ -11,6 +11,7 @@ WITH
 			n.Дивизион,
 			COUNT(*) OVER my_window
 		FROM sttgaz.dds_isc_nomenclature_guide n
+		WHERE n.Дивизион IN ('LCV', 'MCV', 'BUS')
 		WINDOW my_window AS (PARTITION BY n."Модель на заводе", n.Производитель, n.Дивизион)
 	),
 	nom AS(
