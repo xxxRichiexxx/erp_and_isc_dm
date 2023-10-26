@@ -4,17 +4,16 @@ DROP TABLE IF EXISTS sttgaz.dm_TEST_isc_balance;
 CREATE TABLE sttgaz.dm_TEST_isc_balance AS
  	SELECT 
  		(date_trunc('MONTH'::varchar(5), s.Период))::date           AS "Месяц",
- 		d.Дивизион,
+ 		s.Дивизион,
         s."Внутренний код",
         s."Вариант сборки",
         s."Направление реализации с учетом УКП",
         SUM(s."Остатки на НП в пути")								AS "Остатки на НП",
         SUM(s."Остатки на КП в пути")								AS "Остатки на КП"
  	FROM sttgaz.dds_isc_sales 								        AS s 
- 	LEFT  JOIN sttgaz.dds_isc_dealer d ON s."Дилер ID" = d.id
   	GROUP BY 
   		(date_trunc('MONTH'::varchar(5), s.Период))::date,
-        d.Дивизион,
+        s.Дивизион,
         s."Внутренний код",
         s."Вариант сборки",
 		s."Направление реализации с учетом УКП";

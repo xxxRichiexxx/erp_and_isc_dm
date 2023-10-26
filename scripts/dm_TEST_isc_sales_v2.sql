@@ -21,7 +21,7 @@ WITH
 	sales_agregate AS (
         SELECT
         	DATE_TRUNC('MONTH', "Период")::date         AS "Месяц",
-            d."Дивизион",
+            s."Дивизион",
 			s."Внутренний код",
 			n.Код65,
             s."Вариант сборки",
@@ -41,13 +41,11 @@ WITH
 				ELSE 'Собранные ТС'
 			END											AS "Тип продукции"
         FROM sttgaz.dds_isc_sales                       AS s
-        LEFT JOIN sttgaz.dds_isc_dealer                 AS d
-            ON s."Дилер ID" = d.id
         LEFT JOIN nom 									AS n 
         	ON s."Внутренний код"  = n.Наименование
         GROUP BY 
         	DATE_TRUNC('MONTH', "Период")::date,
-            d."Дивизион",
+            s."Дивизион",
             s."Внутренний код",
             n.Код65,
             s."Вариант сборки",

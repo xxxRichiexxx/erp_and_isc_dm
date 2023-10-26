@@ -20,7 +20,7 @@ WITH
 	)
 SELECT 
  	(date_trunc('MONTH'::varchar(5), s.Период))::date           AS "Месяц",
- 	d.Дивизион,
+ 	s.Дивизион,
     s."Внутренний код",
     n.Код65,
     s."Вариант сборки",
@@ -40,11 +40,10 @@ SELECT
 		ELSE 'Собранные ТС'
 	END															AS "Тип продукции"	
 FROM sttgaz.dds_isc_sales 								        AS s
-LEFT  JOIN sttgaz.dds_isc_dealer d ON s."Дилер ID" = d.id
 LEFT JOIN	nom n ON s."Внутренний код" = n.Наименование 
 GROUP BY 
   	(date_trunc('MONTH'::varchar(5), s.Период))::date,
-	d.Дивизион,
+	s.Дивизион,
     s."Внутренний код",
     n.Код65,
     s."Вариант сборки",
