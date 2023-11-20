@@ -1,5 +1,7 @@
-DROP TABLE IF EXISTS sttgaz.dm_TEST_erp_sales_v2;
-CREATE TABLE sttgaz.dm_TEST_erp_sales_v2 AS
+BEGIN TRANSACTION;
+
+DROP TABLE IF EXISTS sttgaz.dm_TEST_nom;
+CREATE TABLE sttgaz.dm_TEST_nom AS
 WITH 
 	nom_prep AS (
 		SELECT
@@ -18,25 +20,29 @@ WITH
 			n.Производитель 
 			-- n.Дивизион    ------- Убрать, если появятся дубли и перестанут проходиться проверки.
 		)
-	),
-	nom AS(
-		SELECT DISTINCT
-			FIRST_VALUE(Наименование) OVER my_window 								AS Наименование,
-			FIRST_VALUE(Код65) OVER my_window 										AS Код65,
-			"Модель на заводе",
-			Производитель,
-			Дивизион
-		FROM nom_prep
-		WHERE Код65 IS NOT NULL OR count = 1
-		WINDOW my_window AS (
-			PARTITION BY 
-			"Модель на заводе",
-			Производитель
-			-- Дивизион	   ------- Убрать, если появятся дубли и перестанут проходиться проверки.
-			ORDER BY Ид DESC)
-	),
-	erp_nom_join AS(
-		SELECT
+	)
+SELECT DISTINCT
+	FIRST_VALUE(Наименование) OVER my_window 								AS Наименование,
+	FIRST_VALUE(Код65) OVER my_window 										AS Код65,
+	"Модель на заводе",
+	Производитель,
+	Дивизион
+FROM nom_prep
+WHERE Код65 IS NOT NULL OR count = 1
+WINDOW my_window AS (
+PARTITION BY 
+	"Модель на заводе",
+	Производитель
+	-- Дивизион	   ------- Убрать, если появятся дубли и перестанут проходиться проверки.
+	ORDER BY Ид DESC);
+
+	
+	
+DROP TABLE IF EXISTS sttgaz.dm_TEST_erp_sales_v2;
+CREATE TABLE sttgaz.dm_TEST_erp_sales_v2 AS
+WITH 
+	erp_nom_join AS (
+			SELECT
 			Месяц,
 			COALESCE(n.Дивизион, n2.Дивизион) 										AS "Дивизион",
 			COALESCE(n.Наименование, n2.Наименование)								AS "Внутренний код",			
@@ -45,14 +51,14 @@ WITH
 			Реализовано,
 			"Направление реализации с учетом УКП"
 		FROM sttgaz.dm_erp_kit_sales_v 												AS s
-		LEFT JOIN nom																AS n
+		LEFT JOIN sttgaz.dm_TEST_nom												AS n
 			ON s.Контрагент = n.Производитель
 				AND(
 					"Чертежный номер комплекта" = n."Модель на заводе"
 					OR REPLACE(s."Чертежный номер комплекта", '-00', '-') = REGEXP_REPLACE(n.Код65 , '^А', 'A')	    ------- Убрать, если появятся дубли и перестанут проходиться проверки.
 					OR REPLACE(s."Чертежный номер комплекта", '-00', '-') = REGEXP_REPLACE(n.Код65 , '^С', 'C')		------- Убрать, если появятся дубли и перестанут проходиться проверки.
 				)
-		LEFT JOIN nom																AS n2
+		LEFT JOIN sttgaz.dm_TEST_nom												AS n2
 			ON n."Модель на заводе" IS NULL AND n2.Производитель ILIKE '%ГАЗ ПАО%'
 				AND(
 					s."Чертежный номер комплекта" = n2."Модель на заводе"
@@ -163,3 +169,7 @@ WHERE "Реализовано" IS NOT NULL
 
 GRANT SELECT ON TABLE sttgaz.dm_TEST_erp_sales_v2 TO PowerBI_Integration WITH GRANT OPTION;
 COMMENT ON TABLE sttgaz.dm_TEST_erp_sales_v2 IS 'Продажи автокомплектов из ERP';
+
+DROP TABLE IF EXISTS sttgaz.dm_TEST_nom;
+
+COMMIT TRANSACTION;
