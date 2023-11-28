@@ -1,3 +1,5 @@
+BEGIN TRANSACTION;
+
 DROP TABLE IF EXISTS sttgaz.dm_TEST_isc_sales_v2;
 CREATE TABLE sttgaz.dm_TEST_isc_sales_v2 AS
 WITH
@@ -113,3 +115,5 @@ WHERE "Продано в розницу" IS NOT NULL
 
 GRANT SELECT ON TABLE sttgaz.dm_TEST_isc_sales_v2 TO PowerBI_Integration WITH GRANT OPTION;
 COMMENT ON TABLE sttgaz.dm_TEST_isc_sales_v2 IS 'Продажи ТС из ИСК';
+
+COMMIT TRANSACTION;
