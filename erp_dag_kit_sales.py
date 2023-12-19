@@ -38,8 +38,8 @@ with DAG(
         for wait_dag in wait_dags:
             tasks.append(
                 ExternalTaskSensor(
-                    task_id=f'{dag}_wait',
-                    external_dag_id=dag,
+                    task_id=f'{wait_dag}_wait',
+                    external_dag_id=wait_dag,
                     external_task_id='Конец',
                 )
             )
