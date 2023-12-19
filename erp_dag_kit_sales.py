@@ -27,19 +27,22 @@ with DAG(
 
     with TaskGroup('Ожидание_формирования_слоя_DDS') as dds_wait:
 
-        isc_wait = ExternalTaskSensor(
-            task_id='isc_wait',
-            external_dag_id='isc_dealer_sales',
-            external_task_id='Конец',
+        dags = (
+            'isc_dealer_sales',
+            'erp_kit_sales',
+            'isc_classifier',
+            'isc_realization',
         )
+        tasks = []
 
-        erp_wait = ExternalTaskSensor(
-            task_id='erp_wait',
-            external_dag_id='erp_kit_sales',
-            external_task_id='Конец',
-        )
-
-        [isc_wait, erp_wait]
+        for dag in dags:
+            tasks.append(
+                ExternalTaskSensor(
+                    task_id=f'{dag}_wait',
+                    external_dag_id=dag,
+                    external_task_id='Конец',
+                )
+            )
 
     with TaskGroup('Загрузка_данных_в_dm_слой') as data_to_dm:
 
