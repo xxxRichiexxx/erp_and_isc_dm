@@ -14,7 +14,7 @@ default_args = {
     'retry_delay': dt.timedelta(minutes=30),
 }
 with DAG(
-        'erp_and_isc_dm_v3',
+        'erp_and_isc_dm',
         default_args=default_args,
         description='Продажи комплектов. Суммарные объемы из ERP и ИСК.',
         start_date=dt.datetime(2023, 12, 15),
