@@ -14,7 +14,7 @@ default_args = {
     'retry_delay': dt.timedelta(minutes=30),
 }
 with DAG(
-        'erp_and_isc_dm',
+        'erp_and_isc_dm_v3',
         default_args=default_args,
         description='Продажи комплектов. Суммарные объемы из ERP и ИСК.',
         start_date=dt.datetime(2023, 12, 15),
@@ -43,6 +43,7 @@ with DAG(
                     external_task_id='Конец',
                 )
             )
+        tasks
 
     with TaskGroup('Загрузка_данных_в_dm_слой') as data_to_dm:
 
