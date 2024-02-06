@@ -31,5 +31,3 @@ GRANT SELECT ON TABLE sttgaz.dm_TEST_isc_sales TO PowerBI_Integration WITH GRANT
 COMMENT ON TABLE sttgaz.dm_TEST_isc_sales IS 'Продажи ТС из ИСК';
 
 COMMIT TRANSACTION;
-
-VACUUM sttgaz.dm_TEST_isc_sales;
